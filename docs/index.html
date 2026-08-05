@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>YouTube Script Extractor</title>
+<meta name="description" content="유튜브 영상의 자막을 텍스트 또는 SRT 자막 파일로 뽑아주는 로컬 웹 도구.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script>
+// applied before first paint so the theme never flashes
+document.documentElement.setAttribute("data-theme", localStorage.getItem("theme") || "light");
+</script>
+
+<style>
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+:root{
+--bg:radial-gradient(circle at top,#1a1d35 0%,#0b0b0d 45%,#070708 100%);
+--text:#fff;
+--muted:#a3a3ad;
+--card-bg:rgba(18,18,22,.75);
+--card-border:rgba(255,255,255,.08);
+--panel-bg:#0d0d10;
+--panel-border:#26262c;
+--code-bg:#111116;
+--btn-bg:#18181d;
+--btn-border:#2c2c34;
+--btn-hover-bg:#23232b;
+--footer-color:#7c7c86;
+--accent:#6366f1;
+--accent2:#8b5cf6;
+}
+
+:root[data-theme="light"]{
+--bg:radial-gradient(circle at top,#eef0ff 0%,#f7f7fb 45%,#ffffff 100%);
+--text:#16161a;
+--muted:#5b5b66;
+--card-bg:rgba(255,255,255,.75);
+--card-border:rgba(0,0,0,.08);
+--panel-bg:#ffffff;
+--panel-border:#e2e2ea;
+--code-bg:#f4f4f8;
+--btn-bg:#ffffff;
+--btn-border:#d8d8e0;
+--btn-hover-bg:#f0f0f5;
+--footer-color:#77778a;
+--accent:#6366f1;
+--accent2:#8b5cf6;
+}
+
+body{
+font-family:Inter,-apple-system,"Segoe UI","Malgun Gothic",sans-serif;
+background:var(--bg);
+background-attachment:fixed;
+color:var(--text);
+min-height:100vh;
+padding:40px 20px 60px;
+line-height:1.6;
+transition:background .3s ease,color .3s ease;
+}
+
+.wrap{
+width:900px;
+max-width:100%;
+margin:0 auto;
+}
+
+.card{
+background:var(--card-bg);
+backdrop-filter:blur(20px);
+border:1px solid var(--card-border);
+border-radius:22px;
+padding:40px;
+box-shadow:0 20px 80px rgba(0,0,0,.28),0 0 0 1px rgba(255,255,255,.02) inset;
+animation:fadeInUp .5s ease;
+}
+
+@keyframes fadeInUp{
+from{ opacity:0; transform:translateY(14px); }
+to{ opacity:1; transform:translateY(0); }
+}
+
+.top{
+display:flex;
+align-items:center;
+justify-content:space-between;
+margin-bottom:22px;
+}
+
+.icon-btn{
+width:38px;
+height:38px;
+border-radius:50%;
+border:1px solid var(--btn-border);
+background:var(--btn-bg);
+color:var(--text);
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+transition:.2s;
+flex:0 0 auto;
+}
+.icon-btn:hover{ background:var(--btn-hover-bg); border-color:var(--accent); }
+.icon-btn:active{ transform:scale(.92); }
+
+h1{
+font-size:38px;
+font-weight:700;
+letter-spacing:-1.2px;
+margin-bottom:12px;
+}
+
+.lede{
+color:var(--muted);
+font-size:17px;
+max-width:60ch;
+}
+
+.cta-row{
+display:flex;
+flex-wrap:wrap;
+gap:12px;
+align-items:center;
+margin-top:30px;
+}
+
+.btn-primary{
+display:inline-flex;
+align-items:center;
+gap:10px;
+height:56px;
+padding:0 28px;
+border:none;
+border-radius:14px;
+font-weight:600;
+font-size:15px;
+color:#fff;
+text-decoration:none;
+background:linear-gradient(135deg,#6366f1,#8b5cf6);
+transition:.25s;
+}
+.btn-primary:hover{ transform:translateY(-2px); box-shadow:0 12px 30px rgba(99,102,241,.45); }
+.btn-primary:active{ transform:translateY(0) scale(.98); }
+
+.btn-secondary{
+display:inline-flex;
+align-items:center;
+gap:8px;
+height:56px;
+padding:0 22px;
+border-radius:14px;
+border:1px solid var(--btn-border);
+background:var(--btn-bg);
+color:var(--text);
+text-decoration:none;
+font-size:15px;
+transition:.2s;
+}
+.btn-secondary:hover{ background:var(--btn-hover-bg); border-color:var(--accent); }
+.btn-secondary:active{ transform:scale(.97); }
+
+.cta-note{
+margin-top:12px;
+font-size:13px;
+color:var(--muted);
+}
+
+section{ margin-top:44px; }
+
+h2{
+font-size:21px;
+font-weight:600;
+letter-spacing:-.4px;
+margin-bottom:16px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+gap:14px;
+}
+
+.tile{
+border:1px solid var(--panel-border);
+background:var(--panel-bg);
+border-radius:14px;
+padding:18px 20px;
+}
+
+.tile h3{
+font-size:15px;
+font-weight:600;
+margin-bottom:6px;
+}
+
+.tile p{
+font-size:14px;
+color:var(--muted);
+}
+
+ol.steps{
+list-style:none;
+counter-reset:step;
+display:flex;
+flex-direction:column;
+gap:14px;
+}
+
+ol.steps li{
+counter-increment:step;
+position:relative;
+padding:16px 20px 16px 58px;
+border:1px solid var(--panel-border);
+background:var(--panel-bg);
+border-radius:14px;
+font-size:15px;
+}
+
+ol.steps li::before{
+content:counter(step);
+position:absolute;
+left:18px;
+top:16px;
+width:26px;
+height:26px;
+border-radius:50%;
+background:linear-gradient(135deg,#6366f1,#8b5cf6);
+color:#fff;
+font-size:13px;
+font-weight:600;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.note{
+border:1px solid var(--panel-border);
+background:var(--panel-bg);
+border-left:3px solid var(--accent);
+border-radius:14px;
+padding:18px 22px;
+font-size:14.5px;
+color:var(--muted);
+}
+
+.note strong{ color:var(--text); font-weight:600; }
+
+pre{
+background:var(--code-bg);
+border:1px solid var(--panel-border);
+border-radius:14px;
+padding:18px 20px;
+overflow-x:auto;
+font-family:Consolas,"SFMono-Regular",monospace;
+font-size:13.5px;
+line-height:1.75;
+color:var(--text);
+}
+
+code{
+font-family:Consolas,"SFMono-Regular",monospace;
+font-size:.92em;
+}
+
+p + p{ margin-top:12px; }
+
+.body-text{ color:var(--muted); font-size:15px; }
+
+.footer{
+margin-top:34px;
+padding-top:22px;
+border-top:1px solid var(--card-border);
+font-size:13px;
+color:var(--footer-color);
+}
+
+.footer a{ color:var(--footer-color); }
+
+a{ color:var(--accent); }
+
+@media (max-width:640px){
+body{ padding:16px 14px 40px; }
+.card{ padding:24px; border-radius:18px; }
+h1{ font-size:28px; }
+.lede{ font-size:15.5px; }
+.btn-primary,.btn-secondary{ width:100%; justify-content:center; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+<div class="card">
+
+<div class="top">
+<svg width="52" height="37" viewBox="0 0 640 448" fill="none" aria-label="YouTube">
+<path d="M320 0c112 0 196 4 244 12 38 6 62 30 68 68 6 40 8 89 8 144s-2 104-8 144c-6 38-30 62-68 68-48 8-132 12-244 12s-196-4-244-12c-38-6-62-30-68-68C2 328 0 279 0 224S2 120 8 80c6-38 30-62 68-68C124 4 208 0 320 0Z" fill="#FF0000"/>
+<path d="M258 128l160 96-160 96V128Z" fill="#fff"/>
+</svg>
+
+<button class="icon-btn" id="themeToggle" title="테마 전환" aria-label="테마 전환">
+<svg id="iconSun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="12" cy="12" r="4"/>
+<path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+</svg>
+<svg id="iconMoon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/>
+</svg>
+</button>
+</div>
+
+<h1>YouTube Script Extractor</h1>
+
+<p class="lede">
+유튜브 영상 URL만 넣으면 자막을 가져와 일반 텍스트 또는 SRT 자막 파일로 뽑아주는 도구입니다.
+설치 없이 exe 하나로 실행되고, 모든 처리는 내 PC에서 로컬로 이뤄집니다.
+</p>
+
+<div class="cta-row">
+<a class="btn-primary" href="youtube-script-extractor.exe" download>
+<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+Windows용 다운로드
+</a>
+
+<a class="btn-secondary" href="https://github.com/graypicnic/YoutubeScript">
+<svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"/></svg>
+소스 코드
+</a>
+</div>
+
+<p class="cta-note">
+Windows 64비트 · 약 26MB · Python 설치 불필요
+</p>
+
+<section>
+<h2>사용 방법</h2>
+<ol class="steps">
+<li><strong>다운로드한 exe를 실행합니다.</strong> 잠시 뒤 브라우저가 자동으로 열립니다.</li>
+<li><strong>유튜브 URL을 붙여넣습니다.</strong> 썸네일이 뜨면 인식된 것입니다.</li>
+<li><strong>형식을 고르고 Extract를 누릅니다.</strong> 결과를 복사하거나 <code>.srt</code> / <code>.txt</code> 파일로 저장할 수 있습니다.</li>
+</ol>
+</section>
+
+<section>
+<h2>기능</h2>
+<div class="grid">
+
+<div class="tile">
+<h3>자막 추출</h3>
+<p>수동 자막과 자동 생성 자막을 모두 지원합니다. 한국어·영어를 우선 찾고, 없으면 사용 가능한 자막을 씁니다.</p>
+</div>
+
+<div class="tile">
+<h3>출력 형식 3종</h3>
+<p>SRT 자막 파일, 타임스탬프 없는 일반 텍스트, 타임스탬프 포함 텍스트 중에 고를 수 있습니다.</p>
+</div>
+
+<div class="tile">
+<h3>로컬 처리</h3>
+<p>서버가 내 PC 안에서만 돕니다. 영상 주소나 자막이 외부로 전송되지 않습니다.</p>
+</div>
+
+<div class="tile">
+<h3>편집 편의</h3>
+<p>줄 번호 표시, 스크롤 동기화, 결과 복사, 파일 다운로드, 라이트·다크 테마를 지원합니다.</p>
+</div>
+
+</div>
+</section>
+
+<section>
+<h2>왜 웹에서 바로 안 되나요</h2>
+<div class="note">
+<p>
+이 페이지에서 바로 자막을 뽑을 수 있으면 좋겠지만, <strong>유튜브가 브라우저의 직접 자막 요청을 차단합니다.</strong>
+자막 트랙 주소를 알아내는 것까지는 되는데 마지막 요청이 빈 응답을 돌려줍니다.
+</p>
+<p>
+서버 쪽에서 요청할 때만 정상 동작하기 때문에 백엔드가 반드시 필요하고,
+GitHub Pages는 정적 파일만 서빙하므로 여기서 실행할 수 없습니다.
+그래서 내 PC에서 도는 exe 형태로 배포합니다.
+</p>
+</div>
+</section>
+
+<section>
+<h2>소스로 실행하기</h2>
+<p class="body-text">Python 3.10 이상이 필요합니다.</p>
+<pre>git clone https://github.com/graypicnic/YoutubeScript.git
+cd YoutubeScript
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+python main.py</pre>
+<p class="body-text">
+실행하면 <code>http://127.0.0.1:8787</code> 이 자동으로 열립니다.
+Windows에서는 <code>run.bat</code> 더블클릭으로도 실행됩니다.
+</p>
+</section>
+
+<section>
+<h2>제약</h2>
+<div class="note">
+<p>
+자막이 <strong>없는</strong> 영상은 지원하지 않습니다. 음성 인식 기능은 로컬 CPU 환경에서
+고유명사 오인식이 심하고 속도도 느려서 제외했습니다.
+</p>
+<p>
+개인용 로컬 도구입니다. 포트 <code>8787</code>을 사용하므로, 이미 다른 프로그램이 쓰고 있으면 실행되지 않습니다.
+</p>
+</div>
+</section>
+
+<div class="footer">
+<a href="https://github.com/graypicnic/YoutubeScript">github.com/graypicnic/YoutubeScript</a>
+</div>
+
+</div>
+</div>
+
+<script>
+function applyTheme(theme){
+  document.documentElement.setAttribute("data-theme", theme);
+  document.getElementById("iconSun").style.display  = theme === "dark"  ? "block" : "none";
+  document.getElementById("iconMoon").style.display = theme === "light" ? "block" : "none";
+  localStorage.setItem("theme", theme);
+}
+
+document.getElementById("themeToggle").addEventListener("click", () => {
+  const current = document.documentElement.getAttribute("data-theme") || "light";
+  applyTheme(current === "dark" ? "light" : "dark");
+});
+
+applyTheme(localStorage.getItem("theme") || "light");
+</script>
+
+</body>
+</html>

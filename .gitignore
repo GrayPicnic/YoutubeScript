@@ -1,0 +1,9 @@
+venv/
+__pycache__/
+*.pyc
+.env
+
+# PyInstaller build artifacts (the published exe lives in docs/)
+build/
+dist/
+*.spec
