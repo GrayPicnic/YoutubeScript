@@ -5,6 +5,7 @@ import webbrowser
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from youtube_transcript_api import YouTubeTranscriptApi
@@ -21,6 +22,13 @@ if getattr(sys, "frozen", False):
     BASE_DIR = sys._MEIPASS
 else:
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# serves the logo and the support-button icon; the folder is bundled into the exe
+app.mount(
+    "/static",
+    StaticFiles(directory=os.path.join(BASE_DIR, "static")),
+    name="static",
+)
 
 
 def format_time(seconds: float) -> str:

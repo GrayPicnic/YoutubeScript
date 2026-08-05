@@ -66,7 +66,7 @@ box-sizing:border-box;
 
 body{
 
-font-family:Inter,sans-serif;
+font-family:Inter,"Segoe UI","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
 background:var(--bg);
 color:var(--text);
 
@@ -142,6 +142,79 @@ display:flex;
 align-items:center;
 
 gap:10px;
+
+}
+
+.brand-logo{
+
+width:92px;
+
+height:92px;
+
+display:block;
+
+}
+
+/* support buttons, matching the landing page and the other graypicnic sites */
+.support-fixed{
+
+position:fixed;
+
+right:20px;
+
+bottom:20px;
+
+z-index:60;
+
+display:flex;
+
+align-items:center;
+
+gap:10px;
+
+}
+
+.kofi-fixed iframe{ display:block; }
+
+.litt-btn{
+
+display:flex;
+
+align-items:center;
+
+gap:8px;
+
+background:#1a1a1a;
+
+color:#fff;
+
+font-weight:700;
+
+font-size:14px;
+
+padding:10px 16px;
+
+border-radius:8px;
+
+white-space:nowrap;
+
+text-decoration:none;
+
+box-shadow:0 2px 10px rgba(16,22,43,.18);
+
+transition:transform .15s,background .15s;
+
+}
+
+.litt-btn:hover{ background:#242c4d; transform:translateY(-1px); }
+
+.litt-btn img{ width:20px; height:20px; display:block; border-radius:4px; object-fit:contain; }
+
+@media (max-width:480px){
+
+.litt-btn span{ display:none; }
+
+.litt-btn{ padding:10px; }
 
 }
 
@@ -792,10 +865,7 @@ h1{ font-size:26px; }
 
 <div class="brand">
 
-<svg width="44" height="31" viewBox="0 0 640 448" fill="none" aria-label="YouTube">
-<path d="M320 0c112 0 196 4 244 12 38 6 62 30 68 68 6 40 8 89 8 144s-2 104-8 144c-6 38-30 62-68 68-48 8-132 12-244 12s-196-4-244-12c-38-6-62-30-68-68C2 328 0 279 0 224S2 120 8 80c6-38 30-62 68-68C124 4 208 0 320 0Z" fill="#FF0000"/>
-<path d="M258 128l160 96-160 96V128Z" fill="#fff"/>
-</svg>
+<img class="brand-logo" src="/static/logo.png" alt="" width="92" height="92">
 
 </div>
 
@@ -905,6 +975,24 @@ Supports videos with public captions only.
 </div>
 
 <div class="toast-container" id="toastContainer"></div>
+
+<div class="support-fixed">
+  <a class="litt-btn" href="https://litt.ly/graypicnic" target="_blank" rel="noopener" aria-label="커피로 후원하기 (litt.ly)">
+    <img src="/static/litt-icon.png" alt="" width="20" height="20">
+    <span>커피로 후원하기</span>
+  </a>
+  <div class="kofi-fixed">
+    <script src="https://storage.ko-fi.com/cdn/widget/Widget_2.js"></script>
+    <script>
+      try{
+        if (typeof kofiwidget2 !== 'undefined') {
+          kofiwidget2.init('Support me on Ko-fi', '#72a4f2', 'C1I722D37P');
+          kofiwidget2.draw();
+        }
+      }catch(e){ console.warn('Ko-fi widget failed to load.', e); }
+    </script>
+  </div>
+</div>
 
 <script>
 let lastTitle = "script";
