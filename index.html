@@ -4,10 +4,44 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>YouTube Script Extractor</title>
-<meta name="description" content="Pull captions from any YouTube video as plain text or an SRT subtitle file.">
+<title>YouTube Script Extractor — Free Caption &amp; SRT Downloader</title>
+<meta name="description" content="Free Windows tool that pulls captions from any YouTube video and saves them as plain text, timestamped text, or an SRT subtitle file. Runs locally.">
 
+<link rel="canonical" href="https://graypicnic.github.io/YoutubeScript/">
 <link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="YouTube Script Extractor">
+<meta property="og:url" content="https://graypicnic.github.io/YoutubeScript/">
+<meta property="og:title" content="YouTube Script Extractor — Free Caption &amp; SRT Downloader">
+<meta property="og:description" content="Pull captions from any YouTube video as plain text, timestamped text, or an SRT subtitle file. Free, local, no install.">
+<meta property="og:image" content="https://graypicnic.github.io/YoutubeScript/favicon.png">
+<meta property="og:image:width" content="200">
+<meta property="og:image:height" content="200">
+
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="YouTube Script Extractor — Free Caption &amp; SRT Downloader">
+<meta name="twitter:description" content="Pull captions from any YouTube video as plain text, timestamped text, or an SRT subtitle file. Free, local, no install.">
+<meta name="twitter:image" content="https://graypicnic.github.io/YoutubeScript/favicon.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "YouTube Script Extractor",
+  "description": "Free Windows tool that pulls captions from any YouTube video and saves them as plain text, timestamped text, or an SRT subtitle file.",
+  "url": "https://graypicnic.github.io/YoutubeScript/",
+  "downloadUrl": "https://graypicnic.github.io/YoutubeScript/docs/youtube-script-extractor.exe",
+  "applicationCategory": "MultimediaApplication",
+  "operatingSystem": "Windows 64-bit",
+  "fileSize": "26MB",
+  "softwareRequirements": "None. Python is not required.",
+  "image": "https://graypicnic.github.io/YoutubeScript/favicon.png",
+  "author": { "@type": "Person", "name": "graypicnic" },
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -250,6 +284,42 @@ font-size:.92em;
 
 a{ color:var(--accent); }
 
+/* support buttons, matching the ones on the other graypicnic sites */
+.support-fixed{
+position:fixed;
+right:20px;
+bottom:20px;
+z-index:60;
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+.kofi-fixed iframe{ display:block; }
+
+.litt-btn{
+display:flex;
+align-items:center;
+gap:8px;
+background:#1a1a1a;
+color:#fff;
+font-weight:700;
+font-size:14px;
+padding:10px 16px;
+border-radius:8px;
+white-space:nowrap;
+text-decoration:none;
+box-shadow:0 2px 10px rgba(16,22,43,.18);
+transition:transform .15s,background .15s;
+}
+.litt-btn:hover{ background:#242c4d; transform:translateY(-1px); }
+.litt-btn img{ width:20px; height:20px; display:block; border-radius:4px; object-fit:contain; }
+
+@media (max-width:480px){
+.litt-btn span{ display:none; }
+.litt-btn{ padding:10px; }
+}
+
 @media (max-width:640px){
 body{ padding:16px 14px 40px; }
 .card{ padding:24px; border-radius:18px; }
@@ -339,6 +409,24 @@ Windows 64-bit &middot; 26 MB &middot; No Python required
 </section>
 
 </div>
+</div>
+
+<div class="support-fixed">
+  <a class="litt-btn" href="https://litt.ly/graypicnic" target="_blank" rel="noopener" aria-label="Buy me a coffee (litt.ly)">
+    <img src="litt-icon.png" alt="" width="20" height="20">
+    <span>Buy me a coffee</span>
+  </a>
+  <div class="kofi-fixed">
+    <script src="https://storage.ko-fi.com/cdn/widget/Widget_2.js"></script>
+    <script>
+      try{
+        if (typeof kofiwidget2 !== 'undefined') {
+          kofiwidget2.init('Support me on Ko-fi', '#72a4f2', 'C1I722D37P');
+          kofiwidget2.draw();
+        }
+      }catch(e){ console.warn('Ko-fi widget failed to load.', e); }
+    </script>
+  </div>
 </div>
 
 <script>
