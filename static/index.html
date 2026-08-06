@@ -156,33 +156,40 @@ display:block;
 }
 
 /* support buttons, matching the landing page and the other graypicnic sites */
-.support-fixed{
+.support-row{
 
-position:fixed;
-
-right:20px;
-
-bottom:20px;
-
-z-index:60;
+margin-top:28px;
 
 display:flex;
+
+justify-content:center;
 
 align-items:center;
 
 gap:10px;
 
+flex-wrap:wrap;
+
 }
 
-.kofi-fixed iframe{ display:block; }
+/* Ko-fi injects its own stylesheet, so these overrides force its button to the
+   same pill height as the litt.ly button next to it. */
+#kofi-widget-container{ display:inline-flex; align-items:center; }
+#kofi-widget-container a,#kofi-widget-container .kofi-button{ height:40px!important; min-height:40px!important; padding:0 16px!important; border-radius:8px!important; display:inline-flex!important; align-items:center!important; box-sizing:border-box!important; line-height:1!important; font-size:14px!important; font-weight:700!important; text-decoration:none!important; }
+#kofi-widget-container span,#kofi-widget-container .kofitext{ height:auto!important; line-height:1!important; padding:0!important; margin:0!important; display:inline-flex!important; align-items:center!important; gap:8px!important; font-size:14px!important; font-weight:700!important; }
+#kofi-widget-container img,#kofi-widget-container .kofiimg{ width:20px!important; height:20px!important; margin:0!important; flex:none!important; vertical-align:middle!important; }
 
 .litt-btn{
 
-display:flex;
+display:inline-flex;
 
 align-items:center;
 
 gap:8px;
+
+height:40px;
+
+padding:0 16px;
 
 background:#1a1a1a;
 
@@ -191,8 +198,6 @@ color:#fff;
 font-weight:700;
 
 font-size:14px;
-
-padding:10px 16px;
 
 border-radius:8px;
 
@@ -208,13 +213,13 @@ transition:transform .15s,background .15s;
 
 .litt-btn:hover{ background:#242c4d; transform:translateY(-1px); }
 
-.litt-btn img{ width:20px; height:20px; display:block; border-radius:4px; object-fit:contain; }
+.litt-btn img{ width:20px; height:20px; display:block; flex:none; border-radius:4px; object-fit:contain; }
 
 @media (max-width:480px){
 
 .litt-btn span{ display:none; }
 
-.litt-btn{ padding:10px; }
+.litt-btn{ padding:0 10px; }
 
 }
 
@@ -972,27 +977,32 @@ Supports videos with public captions only.
 
 </div>
 
-</div>
-
-<div class="toast-container" id="toastContainer"></div>
-
-<div class="support-fixed">
+<div class="support-row">
+  <div id="kofi-widget-container"></div>
   <a class="litt-btn" href="https://litt.ly/graypicnic" target="_blank" rel="noopener" aria-label="커피로 후원하기 (litt.ly)">
     <img src="/static/litt-icon.png" alt="" width="20" height="20">
     <span>커피로 후원하기</span>
   </a>
-  <div class="kofi-fixed">
-    <script src="https://storage.ko-fi.com/cdn/widget/Widget_2.js"></script>
-    <script>
-      try{
-        if (typeof kofiwidget2 !== 'undefined') {
-          kofiwidget2.init('Support me on Ko-fi', '#72a4f2', 'C1I722D37P');
-          kofiwidget2.draw();
-        }
-      }catch(e){ console.warn('Ko-fi widget failed to load.', e); }
-    </script>
-  </div>
 </div>
+
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+(function(){
+  var s = document.createElement('script');
+  s.src = 'https://storage.ko-fi.com/cdn/widget/Widget_2.js';
+  s.onload = function(){
+    if (typeof kofiwidget2 === 'undefined') return;
+    kofiwidget2.init('Support the Creator : Ko-fi', '#ff850a', 'graypicnic');
+    var c = document.getElementById('kofi-widget-container');
+    if(c) c.innerHTML = kofiwidget2.getHTML();
+  };
+  s.onerror = function(){ console.warn('Ko-fi widget failed to load.'); };
+  document.body.appendChild(s);
+})();
+</script>
 
 <script>
 let lastTitle = "script";
