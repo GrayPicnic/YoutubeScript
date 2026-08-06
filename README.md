@@ -55,6 +55,16 @@ pyinstaller --onefile --name youtube-script-extractor --add-data "static;static"
 
 결과물은 `dist/youtube-script-extractor.exe` (약 27MB). Python 설치 없이 단독 실행됩니다.
 
+### 배포
+
+exe는 저장소가 아니라 **GitHub Releases**로 배포합니다. 랜딩 페이지의 다운로드 버튼은
+`releases/latest/download/youtube-script-extractor.exe` 를 가리키므로, 새 릴리스를 올리기만 하면
+링크는 그대로 두어도 최신 파일을 가리킵니다. **파일명은 반드시 유지하세요.**
+
+원래는 `docs/` 에 exe를 넣어 Pages가 직접 서빙했는데, 27MB 파일이 아티팩트에 들어가면서
+`Deploy to GitHub Pages` 단계가 10분 타임아웃으로 두 번 연속 실패했습니다 (빌드 job 자체는 12초 만에 성공).
+exe를 빼자 아티팩트가 27MB → 1.1MB 로 줄었습니다. 다시 넣지 마세요.
+
 ## 제약
 
 - 자막이 없는 영상은 지원하지 않습니다. (음성 인식 기능은 로컬 CPU 환경에서 속도·정확도가 떨어져 제거했습니다.)
